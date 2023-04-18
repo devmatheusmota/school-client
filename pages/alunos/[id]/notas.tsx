@@ -9,34 +9,28 @@ import { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import Swal from "sweetalert2";
 
-export default function CoursescoursesPage() {
-  const { user, token } = useContext(AuthContext);
+export default function StudentGradePage() {
+  const { user } = useContext(AuthContext);
   const router = useRouter();
-  const { id, nome } = router.query;
-  const teacherName = nome?.toString()?.replace("-", " ");
-  const [subjects, setSubjects] = useState([]);
+  const id = router.query.id;
+  const [grades, setGrades] = useState([]);
 
   useEffect(() => {
     if (id) {
       api
-        .get(`/subject/teacher/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+        .get(`/grade/student/${id}`)
         .then((response) => {
-          console.log(response);
-          setSubjects(response.data.subject);
+          setGrades(response.data.grades);
         })
         .catch((error) => {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: error?.response?.data?.message,
+            text: error.response.data.message,
           });
         });
     }
-  }, [id, token]);
+  }, [id]);
 
   return (
     <>
@@ -55,13 +49,13 @@ export default function CoursescoursesPage() {
         user={user}
         menuSelected={
           user?.role === "ADMIN"
-            ? MenuSelected.DISCIPLINASADMIN
+            ? MenuSelected.NOTASADMIN
             : user?.role === "TEACHER"
-            ? MenuSelected.DISCIPLINASTEACHER
-            : undefined
+            ? MenuSelected.NOTASTEACHER
+            : MenuSelected.NOTASSTUDENT
         }
       >
-        <h1 className="text-4xl">Disciplinas do Professor(a) {teacherName}</h1>
+        <h1 className="text-4xl">Notas do Aluno {grades[0]?.Student?.name}</h1>
         <div className="flex flex-col mt-4">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -73,13 +67,25 @@ export default function CoursescoursesPage() {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        Nome
+                        Nome do aluno
                       </th>
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        Ano
+                        Nome da atividade
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Disciplina
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Nota
                       </th>
                       <th
                         scope="col"
@@ -88,50 +94,35 @@ export default function CoursescoursesPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {subjects.map((subject) => (
-                      <tr key={subject.id}>
+                    {grades.map((grade) => (
+                      <tr key={grade.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
-                            {subject.name}
+                            {grade?.Student.name}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
-                            {subject.year}
+                            {grade?.Activity.name}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {grade?.Activity.Subject.name}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {grade?.value}
                           </div>
                         </td>
                         <td className="flex flex-row justify-end items-center px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <a
-                            href="#"
+                            href={`/notas/${grade.id}/editar?atividade=${grade.Activity.name}&disciplina=${grade.Activity.Subject.name}`}
                             className="text-3xl text-indigo-600 hover:text-indigo-900"
-                            onClick={() => {
-                              Swal.fire({
-                                title: "Tem certeza?",
-                                text: "Você não poderá reverter isso!",
-                                icon: "warning",
-                                showCancelButton: true,
-                                confirmButtonColor: "#3085d6",
-                                cancelButtonColor: "#d33",
-                                confirmButtonText: "Sim, apague!",
-                              }).then((result) => {
-                                if (result.isConfirmed) {
-                                  api
-                                    .delete(`/subject/${subject.id}`)
-                                    .then(() => {
-                                      Swal.fire(
-                                        "Apagado!",
-                                        "A disciplina foi apagada.",
-                                        "success"
-                                      ).then(() => {
-                                        router.reload();
-                                      });
-                                    });
-                                }
-                              });
-                            }}
                           >
-                            <span className="material-symbols-outlined w-10 h-10 text-red-700">
-                              delete
+                            <span className="material-symbols-outlined w-10 h-10 text-green-700">
+                              edit
                             </span>
                           </a>
                         </td>

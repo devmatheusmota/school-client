@@ -24,7 +24,11 @@ const studentNavigation = [
   { text: "Notas", href: "/notas" },
 ];
 
-const profile = [{ text: "Perfil", href: "/perfil" }];
+const teacherProfile = [{ text: "Perfil", href: "/perfil" }];
+const studentProfile = [
+  { text: "Perfil", href: "/perfil" },
+  { text: "Carteirinha", href: "/carteirinha" },
+];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -45,6 +49,8 @@ export default function Dashboard({
       : user?.role === "TEACHER"
       ? teacherNavigation
       : studentNavigation;
+
+  const profile = user?.role !== "STUDENT" ? teacherProfile : studentProfile;
 
   const { signOut } = useContext(AuthContext);
 
