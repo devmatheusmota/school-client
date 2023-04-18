@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { AuthContext } from "@/contexts/AuthContext";
 import Head from "next/head";
 import { useContext } from "react";

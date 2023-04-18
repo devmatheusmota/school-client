@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { Fragment, useContext, useEffect } from "react";
 import Head from "next/head";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
