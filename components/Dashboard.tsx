@@ -33,9 +33,11 @@ function classNames(...classes) {
 export default function Dashboard({
   children,
   user,
+  menuSelected,
 }: {
   children: any;
   user: User;
+  menuSelected: number;
 }) {
   const navigation =
     user?.role === "ADMIN"
@@ -53,6 +55,7 @@ export default function Dashboard({
       </Head>
 
       <Disclosure as="nav" className="bg-gray-800">
+        {/* Mobile menu, show/hide based on menu open state. */}
         {({ open }) => (
           <>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -68,7 +71,7 @@ export default function Dashboard({
                   <div className="hidden md:block">
                     <div className="ml-10 flex items-baseline space-x-4">
                       {navigation.map((item, itemIdx) =>
-                        itemIdx === 0 ? (
+                        itemIdx === menuSelected ? (
                           <Fragment key={item.text}>
                             {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
                             <a

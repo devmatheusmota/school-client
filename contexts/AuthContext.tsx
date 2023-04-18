@@ -16,6 +16,7 @@ type AuthContextType = {
   user?: User;
   signIn: (data: SignInData) => Promise<void>;
   signOut: () => void;
+  token?: string;
 };
 
 interface SignInData {
@@ -59,7 +60,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, user, signIn, signOut, token }}
+    >
       {children}
     </AuthContext.Provider>
   );

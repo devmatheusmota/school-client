@@ -1,5 +1,6 @@
 import Dashboard from "@/components/Dashboard";
 import { AuthContext } from "@/contexts/AuthContext";
+import { MenuSelected } from "@/interface/menuPosition";
 import { api } from "@/services/api";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
@@ -43,7 +44,16 @@ export default function CoursescoursesPage() {
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,600,0,200"
         />
       </Helmet>
-      <Dashboard user={user}>
+      <Dashboard
+        user={user}
+        menuSelected={
+          user?.role === "ADMIN"
+            ? MenuSelected.TURMASADMIN
+            : user?.role === "TEACHER"
+            ? MenuSelected.TURMASTEACHER
+            : undefined
+        }
+      >
         <h1 className="text-4xl">Turmas do Professor(a) {user?.name}</h1>
         <div className="flex flex-col mt-4">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -87,14 +97,6 @@ export default function CoursescoursesPage() {
                           <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
                             <a href={`/alunos/turmas/${course.id}`}>Alunos</a>
                           </button>
-                          <a
-                            href="#"
-                            className="text-3xl text-indigo-600 hover:text-indigo-900"
-                          >
-                            <span className="material-symbols-outlined w-10 h-10 text-green-700">
-                              edit
-                            </span>
-                          </a>
                           <a
                             href="#"
                             className="text-3xl text-indigo-600 hover:text-indigo-900"

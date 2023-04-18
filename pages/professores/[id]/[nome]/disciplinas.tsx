@@ -1,20 +1,40 @@
 import Dashboard from "@/components/Dashboard";
 import { AuthContext } from "@/contexts/AuthContext";
-import { api } from "@/services/api";
-import { Helmet } from "react-helmet";
-import { GetServerSideProps } from "next";
-import { useContext, useEffect, useState } from "react";
-import Swal from "sweetalert2";
-import { XIcon } from "@heroicons/react/outline";
 import { MenuSelected } from "@/interface/menuPosition";
+import { api } from "@/services/api";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
+import Swal from "sweetalert2";
 
-export default function TeacherPage({ teachers }) {
-  const { user } = useContext(AuthContext);
-  const [teacher, setTeacher] = useState([]);
+export default function CoursescoursesPage() {
+  const { user, token } = useContext(AuthContext);
+  const router = useRouter();
+  const { id, nome } = router.query;
+  const teacherName = nome?.toString()?.replace("-", " ");
+  const [subjects, setSubjects] = useState([]);
 
   useEffect(() => {
-    setTeacher(teachers);
-  }, [teachers]);
+    if (id) {
+      api
+        .get(`/subject/teacher/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          console.log(response);
+          setSubjects(response.data.subject);
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: error?.response?.data?.message,
+          });
+        });
+    }
+  }, [id, token]);
 
   return (
     <>
@@ -32,15 +52,14 @@ export default function TeacherPage({ teachers }) {
       <Dashboard
         user={user}
         menuSelected={
-          user?.role === "ADMIN" ? MenuSelected.PROFESSORESADMIN : undefined
+          user?.role === "ADMIN"
+            ? MenuSelected.DISCIPLINASADMIN
+            : user?.role === "TEACHER"
+            ? MenuSelected.DISCIPLINASTEACHER
+            : undefined
         }
       >
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-4xl">Professores</h1>
-          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
-            <a href={`/professores/cadastrar`}>Cadastrar professor</a>
-          </button>
-        </div>
+        <h1 className="text-4xl">Disciplinas do Professor(a) {teacherName}</h1>
         <div className="flex flex-col mt-4">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -52,19 +71,13 @@ export default function TeacherPage({ teachers }) {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        ID
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
                         Nome
                       </th>
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        Email
+                        Ano
                       </th>
                       <th
                         scope="col"
@@ -73,50 +86,19 @@ export default function TeacherPage({ teachers }) {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {teacher.map((teacher) => (
-                      <tr key={teacher.id}>
+                    {subjects.map((subject) => (
+                      <tr key={subject.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">
-                                {teacher.id}
-                              </div>
-                            </div>
+                          <div className="text-sm text-gray-900">
+                            {subject.name}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
-                            {teacher.name}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            {teacher.email}
+                            {subject.year}
                           </div>
                         </td>
                         <td className="flex flex-row justify-end items-center px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
-                            <a
-                              href={`/professores/${
-                                teacher.id
-                              }/${teacher.name.replace(" ", "-")}/disciplinas`}
-                            >
-                              Disciplinas
-                            </a>
-                          </button>
-                          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
-                            <a href={`/professores/${teacher.id}/turmas`}>
-                              Turmas
-                            </a>
-                          </button>
-                          <a
-                            href={`/professores/${teacher.id}/editar`}
-                            className="text-3xl text-indigo-600 hover:text-indigo-900"
-                          >
-                            <span className="material-symbols-outlined w-10 h-10 text-green-700">
-                              edit
-                            </span>
-                          </a>
                           <a
                             href="#"
                             className="text-3xl text-indigo-600 hover:text-indigo-900"
@@ -132,14 +114,14 @@ export default function TeacherPage({ teachers }) {
                               }).then((result) => {
                                 if (result.isConfirmed) {
                                   api
-                                    .delete(`/teacher/${teacher.id}`)
+                                    .delete(`/subject/${subject.id}`)
                                     .then(() => {
                                       Swal.fire(
                                         "Apagado!",
-                                        "O professor foi apagado.",
+                                        "A disciplina foi apagada.",
                                         "success"
                                       ).then(() => {
-                                        window.location.reload();
+                                        router.reload();
                                       });
                                     });
                                 }
@@ -163,30 +145,3 @@ export default function TeacherPage({ teachers }) {
     </>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { ["nextauth.token"]: token } = ctx.req.cookies;
-
-  if (!token || token === "null") {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
-  const res = await api.get("/teacher", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  const teachers = res.data.teachers;
-
-  return {
-    props: {
-      teachers: teachers,
-    },
-  };
-};

@@ -1,5 +1,6 @@
 import Dashboard from "@/components/Dashboard";
 import { AuthContext } from "@/contexts/AuthContext";
+import { MenuSelected } from "@/interface/menuPosition";
 import { api } from "@/services/api";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
@@ -44,7 +45,16 @@ export default function StudentByCoursePage() {
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,600,0,200"
         />
       </Helmet>
-      <Dashboard user={user}>
+      <Dashboard
+        user={user}
+        menuSelected={
+          user?.role === "ADMIN"
+            ? MenuSelected.TURMASADMIN
+            : user?.role === "TEACHER"
+            ? MenuSelected.TURMASTEACHER
+            : undefined
+        }
+      >
         <h1 className="text-4xl">Alunos da Turma {course?.name} </h1>
         <div className="flex flex-col mt-4">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -88,14 +98,6 @@ export default function StudentByCoursePage() {
                           <a
                             href="#"
                             className="text-3xl text-indigo-600 hover:text-indigo-900"
-                          >
-                            <span className="material-symbols-outlined w-10 h-10 text-green-700">
-                              edit
-                            </span>
-                          </a>
-                          <a
-                            href="#"
-                            className="text-3xl text-indigo-600 hover:text-indigo-900"
                             onClick={() => {
                               Swal.fire({
                                 title: "Tem certeza?",
@@ -117,7 +119,11 @@ export default function StudentByCoursePage() {
                                         "Deletado!",
                                         "O aluno foi removido dessa turma.",
                                         "success"
-                                      );
+                                      ).then((result) => {
+                                        if (result.isConfirmed) {
+                                          router.reload();
+                                        }
+                                      });
                                     })
                                     .catch((error) => {
                                       Swal.fire({
@@ -125,9 +131,6 @@ export default function StudentByCoursePage() {
                                         title: "Oops...",
                                         text: error.response.data.message,
                                       });
-                                    })
-                                    .finally(() => {
-                                      router.reload();
                                     });
                                 }
                               });

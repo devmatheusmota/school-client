@@ -1,5 +1,6 @@
 import Dashboard from "@/components/Dashboard";
 import { AuthContext } from "@/contexts/AuthContext";
+import { MenuSelected } from "@/interface/menuPosition";
 import { api } from "@/services/api";
 import { GetServerSideProps } from "next";
 import { useContext, useEffect, useState } from "react";
@@ -12,10 +13,17 @@ export default function StudentPage({ students }) {
     setStudent(students);
   }, [students]);
 
-  console.log(student);
-
   return (
-    <Dashboard user={user}>
+    <Dashboard
+      user={user}
+      menuSelected={
+        user?.role === "ADMIN"
+          ? MenuSelected.ALUNOSADMIN
+          : user?.role === "TEACHER"
+          ? MenuSelected.ALUNOSTEACHER
+          : undefined
+      }
+    >
       <h1 className="text-4xl">Alunos</h1>
       <div className="flex flex-col mt-4">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
