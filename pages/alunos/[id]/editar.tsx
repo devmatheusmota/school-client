@@ -26,7 +26,6 @@ export default function EditStudentPage() {
     });
 
     api.get("/course", {}).then((response) => {
-      console.log(response);
       setCourses(response.data.courses);
     });
 
@@ -65,14 +64,14 @@ export default function EditStudentPage() {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: error.response.data.message,
+            text: error?.response.data.message,
           });
         });
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: error.response.data.message,
+        text: error?.response.data.message,
       });
     }
   };

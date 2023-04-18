@@ -25,7 +25,7 @@ export default function StudentByCoursePage() {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: error.response.data.message,
+          text: error?.response.data.message,
         });
       });
 
@@ -131,7 +131,7 @@ export default function StudentByCoursePage() {
                                       Swal.fire({
                                         icon: "error",
                                         title: "Oops...",
-                                        text: error.response.data.message,
+                                        text: error?.response.data.message,
                                       });
                                     });
                                 }

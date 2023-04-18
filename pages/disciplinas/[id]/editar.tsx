@@ -21,28 +21,15 @@ export default function EditsubjectPage() {
   const { id } = router.query;
 
   useEffect(() => {
-    api
-      .get(`/subject/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setSubject(response.data.subject);
-      });
+    api.get(`/subject/${id}`).then((response) => {
+      setSubject(response.data.subject);
+      setValue("name", subject?.name);
+      setValue("teacher_id", subject?.teacher_id);
+    });
 
-    api
-      .get("/teacher", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setTeachers(response.data.teachers);
-      });
-
-    setValue("name", subject?.name);
-    setValue("teacher", subject?.teacher_id);
+    api.get("/teacher").then((response) => {
+      setTeachers(response.data.teachers);
+    });
   }, [id, setValue, subject?.name, subject?.teacher_id, token]);
 
   const onSubmit = (data) => {
@@ -66,14 +53,14 @@ export default function EditsubjectPage() {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: error.response.data.message,
+            text: error?.response.data.message,
           });
         });
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: error.response.data.message,
+        text: error?.response.data.message,
       });
     }
   };
@@ -129,7 +116,7 @@ export default function EditsubjectPage() {
                     >
                       Professor
                     </label>
-                    <select {...register("teacher")}>
+                    <select {...register("teacher_id")}>
                       {teachers.map((teacher) => (
                         <option key={teacher.id} value={teacher.id}>
                           {teacher.name}
@@ -137,21 +124,7 @@ export default function EditsubjectPage() {
                       ))}
                     </select>
                   </div>
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="password"
-                    >
-                      Senha
-                    </label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="password"
-                      type="password"
-                      placeholder="Senha"
-                      {...register("password")}
-                    />
-                  </div>
+
                   <div className="flex items-center justify-between">
                     <button
                       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"

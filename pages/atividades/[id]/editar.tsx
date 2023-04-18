@@ -7,33 +7,32 @@ import { Helmet } from "react-helmet";
 import { GetServerSideProps } from "next";
 import { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { XIcon } from "@heroicons/react/outline";
 import { MenuSelected } from "@/interface/menuPosition";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 
-export default function EditTeacherPage() {
+export default function EditActivityPage() {
   const { user, token } = useContext(AuthContext);
   const { register, handleSubmit, setValue } = useForm();
   const router = useRouter();
-  const [teacher, setTeacher] = useState(null);
+  const [activity, setActivity] = useState(null);
 
   const { id } = router.query;
 
   useEffect(() => {
-    api.get(`/teacher/${id}`).then((response) => {
-      setTeacher(response.data.teacher);
+    api.get(`/activity/${id}`).then((response) => {
+      setActivity(response.data.activity);
+      setValue("name", activity?.name);
+      setValue("description", activity?.description);
+      setValue("due_date", activity?.due_date.split("T")[0]);
     });
-
-    setValue("name", teacher?.name);
-    setValue("email", teacher?.email);
-    setValue("password", teacher?.password);
-  }, [id, setValue, teacher?.email, teacher?.name, teacher?.password]);
+  }, [activity?.description, activity?.due_date, activity?.name, id, setValue]);
 
   const onSubmit = (data) => {
+    data.due_date = new Date(data.due_date).toISOString();
     try {
       api
-        .patch(`/teacher/${id}`, data, {
+        .patch(`/activity/${id}`, data, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -42,9 +41,9 @@ export default function EditTeacherPage() {
           Swal.fire({
             icon: "success",
             title: "Sucesso!",
-            text: "Professor atualizado com sucesso!",
+            text: "Atividade atualizada com sucesso!",
           }).then(() => {
-            window.location.href = "/professores";
+            window.location.href = "/atividades";
           });
         })
         .catch((error) => {
@@ -66,7 +65,7 @@ export default function EditTeacherPage() {
   return (
     <>
       <Helmet>
-        <title>Professores</title>
+        <title>Atividades</title>
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,600,0,200"
@@ -79,10 +78,14 @@ export default function EditTeacherPage() {
       <Dashboard
         user={user}
         menuSelected={
-          user?.role === "ADMIN" ? MenuSelected.PROFESSORESADMIN : undefined
+          user?.role === "ADMIN"
+            ? MenuSelected.DISCIPLINASADMIN
+            : user?.role === "TEACHER"
+            ? MenuSelected.DISCIPLINASTEACHER
+            : undefined
         }
       >
-        <h1 className="text-4xl">Atualização de Professores</h1>
+        <h1 className="text-4xl">Atualização de Atividades</h1>
         <div className="flex flex-col mt-4">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -106,31 +109,31 @@ export default function EditTeacherPage() {
                   <div className="mb-4">
                     <label
                       className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="email"
+                      htmlFor="description"
                     >
-                      Email
+                      Descrição
                     </label>
                     <input
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="email"
-                      type="email"
-                      placeholder="Email"
-                      {...register("email")}
+                      id="description"
+                      type="text"
+                      placeholder="Descrição"
+                      {...register("description")}
                     />
                   </div>
                   <div className="mb-4">
                     <label
                       className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="password"
+                      htmlFor="due_date"
                     >
-                      Senha
+                      Descrição
                     </label>
                     <input
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="password"
-                      type="password"
-                      placeholder="Senha"
-                      {...register("password")}
+                      id="due_date"
+                      type="date"
+                      placeholder="Data de Entrega"
+                      {...register("due_date")}
                     />
                   </div>
                   <div className="flex items-center justify-between">

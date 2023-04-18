@@ -7,33 +7,33 @@ import { Helmet } from "react-helmet";
 import { GetServerSideProps } from "next";
 import { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { XIcon } from "@heroicons/react/outline";
 import { MenuSelected } from "@/interface/menuPosition";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 
-export default function EditTeacherPage() {
+export default function AddSubjectPage() {
   const { user, token } = useContext(AuthContext);
   const { register, handleSubmit, setValue } = useForm();
   const router = useRouter();
-  const [teacher, setTeacher] = useState(null);
+  const [subject, setSubject] = useState(null);
+  const [teachers, setTeachers] = useState([]);
+  const [courses, setCourses] = useState([]);
 
   const { id } = router.query;
 
   useEffect(() => {
-    api.get(`/teacher/${id}`).then((response) => {
-      setTeacher(response.data.teacher);
+    api.get("/course").then((response) => {
+      setCourses(response.data.courses);
     });
-
-    setValue("name", teacher?.name);
-    setValue("email", teacher?.email);
-    setValue("password", teacher?.password);
-  }, [id, setValue, teacher?.email, teacher?.name, teacher?.password]);
+    api.get("/teacher").then((response) => {
+      setTeachers(response.data.teachers);
+    });
+  }, []);
 
   const onSubmit = (data) => {
     try {
       api
-        .patch(`/teacher/${id}`, data, {
+        .post(`/subject`, data, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -42,9 +42,9 @@ export default function EditTeacherPage() {
           Swal.fire({
             icon: "success",
             title: "Sucesso!",
-            text: "Professor atualizado com sucesso!",
+            text: "Disciplina criada com sucesso!",
           }).then(() => {
-            window.location.href = "/professores";
+            window.location.href = "/disciplinas";
           });
         })
         .catch((error) => {
@@ -66,7 +66,7 @@ export default function EditTeacherPage() {
   return (
     <>
       <Helmet>
-        <title>Professores</title>
+        <title>Disciplinas</title>
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,600,0,200"
@@ -79,10 +79,14 @@ export default function EditTeacherPage() {
       <Dashboard
         user={user}
         menuSelected={
-          user?.role === "ADMIN" ? MenuSelected.PROFESSORESADMIN : undefined
+          user?.role === "ADMIN"
+            ? MenuSelected.DISCIPLINASADMIN
+            : user?.role === "TEACHER"
+            ? MenuSelected.DISCIPLINASTEACHER
+            : undefined
         }
       >
-        <h1 className="text-4xl">Atualização de Professores</h1>
+        <h1 className="text-4xl">Cadastro de Disciplinas</h1>
         <div className="flex flex-col mt-4">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -108,38 +112,24 @@ export default function EditTeacherPage() {
                       className="block text-gray-700 text-sm font-bold mb-2"
                       htmlFor="email"
                     >
-                      Email
+                      Professor
                     </label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="email"
-                      type="email"
-                      placeholder="Email"
-                      {...register("email")}
-                    />
+                    <select {...register("teacher_id")}>
+                      {teachers.map((teacher) => (
+                        <option key={teacher.id} value={teacher.id}>
+                          {teacher.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="password"
-                    >
-                      Senha
-                    </label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="password"
-                      type="password"
-                      placeholder="Senha"
-                      {...register("password")}
-                    />
-                  </div>
+
                   <div className="flex items-center justify-between">
                     <button
                       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                       type="button"
                       onClick={handleSubmit(onSubmit)}
                     >
-                      Atualizar
+                      Cadastrar
                     </button>
                   </div>
                 </form>

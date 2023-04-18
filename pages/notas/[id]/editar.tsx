@@ -50,14 +50,14 @@ export default function EditGradePage() {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: error.response.data.message,
+            text: error?.response.data.message,
           });
         });
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: error.response.data.message,
+        text: error?.response.data.message,
       });
     }
   };

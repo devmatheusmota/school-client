@@ -9,16 +9,16 @@ import { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import Swal from "sweetalert2";
 
-export default function StudentGradePage() {
+export default function GradeByActivityPage() {
   const { user } = useContext(AuthContext);
   const router = useRouter();
-  const id = router.query.id;
+  const { id, atividade } = router.query;
   const [grades, setGrades] = useState([]);
 
   useEffect(() => {
     if (id) {
       api
-        .get(`/grade/student/${id}`)
+        .get(`/grade/activity/${id}`)
         .then((response) => {
           setGrades(response.data.grades);
         })
@@ -35,7 +35,7 @@ export default function StudentGradePage() {
   return (
     <>
       <Helmet>
-        <title>Professores</title>
+        <title>Notas</title>
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,600,0,200"
@@ -55,7 +55,7 @@ export default function StudentGradePage() {
             : MenuSelected.NOTASSTUDENT
         }
       >
-        <h1 className="text-4xl">Notas do Aluno {grades[0]?.Student?.name}</h1>
+        <h1 className="text-4xl">Notas da Atividade {atividade}</h1>
         <div className="flex flex-col mt-4">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">

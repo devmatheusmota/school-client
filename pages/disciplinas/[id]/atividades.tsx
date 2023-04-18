@@ -9,18 +9,18 @@ import { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import Swal from "sweetalert2";
 
-export default function StudentGradePage() {
+export default function SubjectActivitiesPage() {
   const { user } = useContext(AuthContext);
   const router = useRouter();
-  const id = router.query.id;
-  const [grades, setGrades] = useState([]);
+  const { id, disciplina } = router.query;
+  const [activities, setActivities] = useState([]);
 
   useEffect(() => {
     if (id) {
       api
-        .get(`/grade/student/${id}`)
+        .get(`/activity/subject/${id}`)
         .then((response) => {
-          setGrades(response.data.grades);
+          setActivities(response.data.activities);
         })
         .catch((error) => {
           Swal.fire({
@@ -35,7 +35,7 @@ export default function StudentGradePage() {
   return (
     <>
       <Helmet>
-        <title>Professores</title>
+        <title>Atividades </title>
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,600,0,200"
@@ -55,7 +55,7 @@ export default function StudentGradePage() {
             : MenuSelected.NOTASSTUDENT
         }
       >
-        <h1 className="text-4xl">Notas do Aluno {grades[0]?.Student?.name}</h1>
+        <h1 className="text-4xl">Atividades da Disciplina {disciplina}</h1>
         <div className="flex flex-col mt-4">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -67,25 +67,19 @@ export default function StudentGradePage() {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        Nome do aluno
+                        Atividade
                       </th>
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        Nome da atividade
+                        Descrição
                       </th>
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        Disciplina
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        Nota
+                        Data de Entrega
                       </th>
                       <th
                         scope="col"
@@ -94,31 +88,37 @@ export default function StudentGradePage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {grades.map((grade) => (
-                      <tr key={grade.id}>
+                    {activities.map((activity) => (
+                      <tr key={activity.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
-                            {grade?.Student.name}
+                            {activity?.name}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
-                            {grade?.Activity.name}
+                            {activity?.description}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
-                            {grade?.Activity.Subject.name}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            {grade?.value}
+                            {activity?.due_date
+                              .split("T")[0]
+                              .split("-")
+                              .reverse()
+                              .join("/")}
                           </div>
                         </td>
                         <td className="flex flex-row justify-end items-center px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
+                            <a
+                              href={`/notas/atividades/${activity.id}?atividade=${activity.name}`}
+                            >
+                              Notas
+                            </a>
+                          </button>
                           <a
-                            href={`/notas/${grade.id}/editar?atividade=${grade.Activity.name}&disciplina=${grade.Activity.Subject.name}`}
+                            href={`/atividades/${activity.id}/editar`}
                             className="text-3xl text-indigo-600 hover:text-indigo-900"
                           >
                             <span className="material-symbols-outlined w-10 h-10 text-green-700">
