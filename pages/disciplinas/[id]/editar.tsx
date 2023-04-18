@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-page-custom-font */
+/* eslint-disable @next/next/google-font-display */
 import Dashboard from "@/components/Dashboard";
 import { AuthContext } from "@/contexts/AuthContext";
 import { api } from "@/services/api";
@@ -41,7 +43,7 @@ export default function EditsubjectPage() {
 
     setValue("name", subject?.name);
     setValue("teacher", subject?.teacher_id);
-  }, [id, setValue, subject?.name, subject?.teacher_id]);
+  }, [id, setValue, subject?.name, subject?.teacher_id, token]);
 
   const onSubmit = (data) => {
     try {

@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-page-custom-font */
+/* eslint-disable @next/next/google-font-display */
 import Dashboard from "@/components/Dashboard";
 import { AuthContext } from "@/contexts/AuthContext";
 import { MenuSelected } from "@/interface/menuPosition";
