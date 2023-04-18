@@ -2,40 +2,25 @@
 /* eslint-disable @next/next/google-font-display */
 import Dashboard from "@/components/Dashboard";
 import { AuthContext } from "@/contexts/AuthContext";
-import { MenuSelected } from "@/interface/menuPosition";
 import { api } from "@/services/api";
-import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
+import { GetServerSideProps } from "next";
+import { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { MenuSelected } from "@/interface/menuPosition";
 
-export default function CoursescoursesPage() {
-  const { user } = useContext(AuthContext);
-  const router = useRouter();
-  const id = router.query.id;
-  const [courses, setCourses] = useState([]);
+export default function CoursePage({ courses }) {
+  const { user, token } = useContext(AuthContext);
+  const [course, setCourse] = useState([]);
 
   useEffect(() => {
-    if (id) {
-      api
-        .get(`/course/teacher/${id}`)
-        .then((response) => {
-          setCourses(response.data.courses);
-        })
-        .catch((error) => {
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: error.response.data.message,
-          });
-        });
-    }
-  }, [id]);
+    setCourse(courses);
+  }, [courses]);
 
   return (
     <>
       <Helmet>
-        <title>Professores</title>
+        <title>Turmas </title>
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,600,0,200"
@@ -55,7 +40,12 @@ export default function CoursescoursesPage() {
             : undefined
         }
       >
-        <h1 className="text-4xl">Turmas do Professor(a) {user?.name}</h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-4xl">Turmas</h1>
+          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
+            <a href={`/turmas/cadastrar`}>Cadastrar turma</a>
+          </button>
+        </div>
         <div className="flex flex-col mt-4">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -82,7 +72,7 @@ export default function CoursescoursesPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {courses.map((course) => (
+                    {course.map((course) => (
                       <tr key={course.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
@@ -98,37 +88,6 @@ export default function CoursescoursesPage() {
                           <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
                             <a href={`/alunos/turmas/${course.id}`}>Alunos</a>
                           </button>
-                          <a
-                            href="#"
-                            className="text-3xl text-indigo-600 hover:text-indigo-900"
-                            onClick={() => {
-                              Swal.fire({
-                                title: "Tem certeza?",
-                                text: "Você não poderá reverter isso!",
-                                icon: "warning",
-                                showCancelButton: true,
-                                confirmButtonColor: "#3085d6",
-                                cancelButtonColor: "#d33",
-                                confirmButtonText: "Sim, apague!",
-                              }).then((result) => {
-                                if (result.isConfirmed) {
-                                  api
-                                    .delete(`/courses/${course.id}`)
-                                    .then(() => {
-                                      Swal.fire(
-                                        "Apagado!",
-                                        "O professor foi apagado.",
-                                        "success"
-                                      );
-                                    });
-                                }
-                              });
-                            }}
-                          >
-                            <span className="material-symbols-outlined w-10 h-10 text-red-700">
-                              delete
-                            </span>
-                          </a>
                         </td>
                       </tr>
                     ))}
@@ -142,3 +101,30 @@ export default function CoursescoursesPage() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { ["nextauth.token"]: token } = ctx.req.cookies;
+
+  if (!token || token === "null") {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  const res = await api.get("/course", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const course = res.data.courses;
+
+  return {
+    props: {
+      courses: course,
+    },
+  };
+};

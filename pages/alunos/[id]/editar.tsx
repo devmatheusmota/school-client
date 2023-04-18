@@ -16,18 +16,33 @@ export default function EditStudentPage() {
   const { register, handleSubmit, setValue } = useForm();
   const router = useRouter();
   const [student, setStudent] = useState(null);
+  const [courses, setCourses] = useState([]);
 
   const { id } = router.query;
 
   useEffect(() => {
-    api.get(`/student/${id}`).then((response) => {
+    api.get(`/student/${id}`, {}).then((response) => {
       setStudent(response.data.student);
+    });
+
+    api.get("/course", {}).then((response) => {
+      console.log(response);
+      setCourses(response.data.courses);
     });
 
     setValue("name", student?.name);
     setValue("email", student?.email);
     setValue("password", "********");
-  }, [id, setValue, student?.email, student?.name, student?.password]);
+    setValue("course_id", student?.course_id);
+  }, [
+    id,
+    setValue,
+    student?.course_id,
+    student?.email,
+    student?.name,
+    student?.password,
+    token,
+  ]);
 
   const onSubmit = (data) => {
     try {
@@ -135,6 +150,21 @@ export default function EditStudentPage() {
                       placeholder="Senha"
                       {...register("password")}
                     />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Turma
+                    </label>
+                    <select
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      {...register("course_id")}
+                    >
+                      {courses.map((course) => (
+                        <option key={course.id} value={course.id}>
+                          {course.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="flex items-center justify-between">
                     <button

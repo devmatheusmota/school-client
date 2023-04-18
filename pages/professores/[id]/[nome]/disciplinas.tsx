@@ -25,7 +25,6 @@ export default function CoursescoursesPage() {
           },
         })
         .then((response) => {
-          console.log(response);
           setSubjects(response.data.subject);
         })
         .catch((error) => {
