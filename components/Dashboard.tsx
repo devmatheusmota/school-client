@@ -5,32 +5,6 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 import { AuthContext, User } from "@/contexts/AuthContext";
 
-const adminNavigation = [
-  { text: "Professores", href: "/professores" },
-  { text: "Alunos", href: "/alunos" },
-  { text: "Turmas", href: "/turmas" },
-  { text: "Disciplinas", href: "/disciplinas" },
-  { text: "Atividades", href: "/atividades" },
-  { text: "Notas", href: "/notas" },
-];
-const teacherNavigation = [
-  { text: "Alunos", href: "/alunos" },
-  { text: "Turmas", href: "/turmas" },
-  { text: "Disciplinas", href: "/disciplinas" },
-  { text: "Atividades", href: "/atividades" },
-  { text: "Notas", href: "/notas" },
-];
-const studentNavigation = [
-  { text: "Atividades", href: "/atividades" },
-  { text: "Notas", href: "/notas" },
-];
-
-const teacherProfile = [{ text: "Perfil", href: "/perfil" }];
-const studentProfile = [
-  { text: "Perfil", href: "/perfil" },
-  { text: "Carteirinha", href: "/carteirinha" },
-];
-
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -44,6 +18,34 @@ export default function Dashboard({
   user: User;
   menuSelected: number;
 }) {
+  const adminNavigation = [
+    { text: "Professores", href: "/professores" },
+    { text: "Alunos", href: "/alunos" },
+    { text: "Turmas", href: "/turmas" },
+    { text: "Disciplinas", href: "/disciplinas" },
+    { text: "Atividades", href: "/atividades" },
+    { text: "Notas", href: "/notas" },
+  ];
+  const teacherNavigation = [
+    { text: "Alunos", href: "/alunos" },
+    { text: "Turmas", href: "/turmas" },
+    { text: "Disciplinas", href: "/disciplinas" },
+    { text: "Atividades", href: "/atividades" },
+    { text: "Notas", href: "/notas" },
+  ];
+  const studentNavigation = [
+    { text: "Atividades", href: "/atividades" },
+    { text: "Notas", href: "/notas" },
+  ];
+
+  const teacherProfile = [
+    { text: "Perfil", href: `/professores/${user?.id}/editar` },
+  ];
+  const studentProfile = [
+    { text: "Perfil", href: `/alunos/${user?.id}/editar` },
+    { text: "Carteirinha", href: "#" },
+  ];
+
   const navigation =
     user?.role === "ADMIN"
       ? adminNavigation
