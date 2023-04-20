@@ -8,7 +8,7 @@ export default function DashboardPage() {
   return (
     <Dashboard user={user} menuSelected={undefined}>
       <h1 className="text-2xl font-semibold text-gray-900">
-        Olá {user.name}, seja muito bem vindo(a).
+        Olá {user?.name}, seja muito bem vindo(a).
       </h1>
     </Dashboard>
   );
