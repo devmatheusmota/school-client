@@ -113,7 +113,7 @@ export default function GradeByActivityPage() {
                           </div>
                         </td>
                         <td className="flex flex-row justify-end items-center px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          {user.role !== "STUDENT" && (
+                          {user?.role !== "STUDENT" && (
                             <a
                               href={`/notas/${grade.id}/editar?atividade=${grade.Activity.name}&disciplina=${grade.Activity.Subject.name}`}
                               className="text-3xl text-indigo-600 hover:text-indigo-900"

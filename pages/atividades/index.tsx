@@ -113,7 +113,7 @@ export default function ActivitiesPage() {
                               Notas
                             </a>
                           </button>
-                          {user.role !== "STUDENT" && (
+                          {user?.role !== "STUDENT" && (
                             <a
                               href={`/atividades/${activity.id}/editar`}
                               className="text-3xl text-indigo-600 hover:text-indigo-900"
