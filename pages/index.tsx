@@ -3,14 +3,13 @@ import { AuthContext } from "@/contexts/AuthContext";
 import Head from "next/head";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
-import swal from "sweetalert2";
 
 export default function Home() {
   const { register, handleSubmit } = useForm();
   const { isAuthenticated, user, signIn } = useContext(AuthContext);
 
   const handleSignIn = async (data: any) => {
-    await signIn(data);
+    signIn(data);
   };
 
   return (
@@ -27,7 +26,7 @@ export default function Home() {
             alt="Workflow"
           />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            Welcome back! Please sign in.
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleSignIn)}>

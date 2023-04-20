@@ -3,6 +3,7 @@ import { decode } from "jsonwebtoken";
 import { parseCookies, setCookie } from "nookies";
 import { createContext, useEffect, useState } from "react";
 import Router from "next/router";
+import Swal from "sweetalert2";
 
 export type User = {
   id: string;
@@ -49,7 +50,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         Router.push("/dashboard");
       })
       .catch((error) => {
-        console.log(error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Email ou senha incorretos!",
+        });
       });
   }
 

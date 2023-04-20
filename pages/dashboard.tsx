@@ -7,7 +7,9 @@ export default function DashboardPage() {
   const { user } = useContext(AuthContext);
   return (
     <Dashboard user={user} menuSelected={undefined}>
-      <h1>Dashboard</h1>
+      <h1 className="text-2xl font-semibold text-gray-900">
+        Olá {user.name}, seja muito bem vindo(a).
+      </h1>
     </Dashboard>
   );
 }
