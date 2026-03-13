@@ -17,9 +17,9 @@
     "autoprefixer": "10.4.14",
     "axios": "^1.12.0",
     "eslint": "8.38.0",
-    "eslint-config-next": "13.5.9",
+    "eslint-config-next": "14.2.35",
     "jsonwebtoken": "^9.0.0",
-    "next": "13.5.9",
+    "next": "14.2.35",
     "nookies": "^2.5.2",
     "postcss": "8.4.21",
     "react": "18.2.0",
@@ -34,5 +34,8 @@
     "@types/cookie": "^0.5.1",
     "@types/jsonwebtoken": "^9.0.1",
     "@types/react-helmet": "^6.1.6"
+  },
+  "resolutions": {
+    "minimatch": "9.0.7"
   }
 }
